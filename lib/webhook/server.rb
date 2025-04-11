@@ -20,10 +20,10 @@ def generate_jwt
 end
 
 WebHook = lambda do |event, payload|
-  puts "Receiving payload -- #{payload}"
+  # puts "Receiving payload -- #{payload}"
   data = payload['payload']
-  # return unless event == 'issues' && payload['action'] == 'opened'
-  puts "Replying comments --- "
+  return unless event == 'issues' && payload['action'] == 'opened'
+  # puts "Replying comments --- "
   issue = data['issue']
   issue_body = issue['body'] || ''
   repo = data['repository']
@@ -37,9 +37,11 @@ WebHook = lambda do |event, payload|
     installation_id = data['installation']['id']
     token_response = app_client.create_app_installation_access_token(installation_id)
     client = Octokit::Client.new(access_token: token_response[:token])
+    # use a proper loggger
     puts "Replying comments --- "
     comment = "Please provide an `Estimate: <number of hours>` in the issue description."
     client.add_comment("#{owner}/#{repo_name}", issue_number, comment)
+    # use a proper logger
     puts "Comment added to issue ##{issue_number} in #{owner}/#{repo_name}"
   end
 end
